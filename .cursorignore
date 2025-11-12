@@ -1,0 +1,10 @@
+# Ignorar arquivos que podem interferir na configuração
+node_modules/
+.next/
+dist/
+build/
+*.log
+
+
+
+

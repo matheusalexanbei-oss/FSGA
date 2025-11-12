@@ -1,0 +1,45 @@
+# ============================================================================
+# CONFIGURAÇÃO COMPLETA DO SUPABASE - GUIA PASSO A PASSO
+# ============================================================================
+
+# PASSO 1: Criar arquivo .env.local na raiz do projeto
+# Copie este conteúdo para um arquivo chamado .env.local
+
+# Configurações do Claude API (já configurado)
+ANTHROPIC_API_KEY=sk-ant-sua-chave-aqui
+
+# Configurações do Supabase (SUBSTITUA PELOS SEUS VALORES)
+NEXT_PUBLIC_SUPABASE_URL=https://seu-projeto.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=sua-chave-anonima-aqui
+
+# Configurações opcionais
+NEXT_PUBLIC_APP_URL=http://localhost:3000
+
+# ============================================================================
+# COMO OBTER OS VALORES DO SUPABASE:
+# ============================================================================
+
+# 1. Acesse: https://supabase.com
+# 2. Faça login na sua conta
+# 3. Selecione seu projeto (ou crie um novo)
+# 4. Vá em "Settings" > "API"
+# 5. Copie:
+#    - Project URL (é o NEXT_PUBLIC_SUPABASE_URL)
+#    - anon public (é o NEXT_PUBLIC_SUPABASE_ANON_KEY)
+
+# ============================================================================
+# EXEMPLO DE COMO DEVE FICAR:
+# ============================================================================
+
+# NEXT_PUBLIC_SUPABASE_URL=https://abcdefghijklmnop.supabase.co
+# NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+
+# ============================================================================
+# IMPORTANTE:
+# ============================================================================
+
+# - NUNCA compartilhe essas chaves
+# - Adicione .env.local ao .gitignore
+# - Reinicie o servidor após alterar o .env.local
+
+

@@ -1,0 +1,15 @@
+# Configurações do Claude API
+ANTHROPIC_API_KEY=sk-ant-sua-chave-aqui
+
+# Configurações do Supabase (se necessário)
+NEXT_PUBLIC_SUPABASE_URL=sua-url-supabase
+NEXT_PUBLIC_SUPABASE_ANON_KEY=sua-chave-supabase
+
+
+
+
+
+
+
+
+

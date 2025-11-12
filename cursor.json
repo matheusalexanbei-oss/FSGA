@@ -1,0 +1,24 @@
+{
+  "cursor.ai.model": "claude-3.5-sonnet",
+  "cursor.ai.provider": "anthropic",
+  "cursor.ai.autoSelect": false,
+  "cursor.general.enableAI": true,
+  "cursor.ai.enabled": true,
+  "cursor.chat.defaultModel": "claude-3.5-sonnet",
+  "cursor.composer.defaultModel": "claude-3.5-sonnet",
+  "cursor.agent.defaultModel": "claude-3.5-sonnet",
+  "cursor.ai.preferClaude": true,
+  "cursor.ai.forceClaude": true,
+  "cursor.ai.defaultModel": "claude-3.5-sonnet",
+  "cursor.ai.modelOverride": "claude-3.5-sonnet",
+  "cursor.ai.disableAutoSelect": true,
+  "cursor.ai.forceModel": "claude-3.5-sonnet",
+  "cursor.chat.model": "claude-3.5-sonnet",
+  "cursor.composer.model": "claude-3.5-sonnet",
+  "cursor.agent.model": "claude-3.5-sonnet"
+}
+
+
+
+
+

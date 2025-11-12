@@ -1,0 +1,11 @@
+# Cursor Rules - Forçar Claude
+# Este arquivo força o Cursor a usar Claude como modelo padrão
+
+MODEL: claude-3.5-sonnet
+PROVIDER: anthropic
+AUTO_SELECT: false
+FORCE_CLAUDE: true
+
+
+
+
