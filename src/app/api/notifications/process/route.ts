@@ -66,17 +66,17 @@ async function checkAndSendNotifications() {
   const today = new Date()
   today.setHours(0, 0, 0, 0)
   
+  const sevenDaysFromNow = new Date(today)
+  sevenDaysFromNow.setDate(today.getDate() + 7)
+  
   const threeDaysFromNow = new Date(today)
   threeDaysFromNow.setDate(today.getDate() + 3)
-  
-  const oneDayFromNow = new Date(today)
-  oneDayFromNow.setDate(today.getDate() + 1)
 
-  // Buscar transações com scheduled_date nas datas relevantes (hoje, 1 dia, 3 dias)
+  // Buscar transações com scheduled_date nas datas relevantes (hoje, 3 dias, 7 dias)
   const targetDates = [
     today.toISOString().split('T')[0],
-    oneDayFromNow.toISOString().split('T')[0],
-    threeDaysFromNow.toISOString().split('T')[0]
+    threeDaysFromNow.toISOString().split('T')[0],
+    sevenDaysFromNow.toISOString().split('T')[0]
   ]
 
   const { data: transactions, error } = await supabase
@@ -107,16 +107,16 @@ async function checkAndSendNotifications() {
     let notificationType: string | null = null
     let daysUntil = 0
 
-    if (scheduledDate.getTime() === threeDaysFromNow.getTime()) {
+    if (scheduledDate.getTime() === sevenDaysFromNow.getTime()) {
+      notificationType = transaction.is_recurring || transaction.notes?.includes('Recorrente') 
+        ? 'recurring_7days' 
+        : 'scheduled_7days'
+      daysUntil = 7
+    } else if (scheduledDate.getTime() === threeDaysFromNow.getTime()) {
       notificationType = transaction.is_recurring || transaction.notes?.includes('Recorrente') 
         ? 'recurring_3days' 
         : 'scheduled_3days'
       daysUntil = 3
-    } else if (scheduledDate.getTime() === oneDayFromNow.getTime()) {
-      notificationType = transaction.is_recurring || transaction.notes?.includes('Recorrente')
-        ? 'recurring_1day'
-        : 'scheduled_1day'
-      daysUntil = 1
     } else if (scheduledDate.getTime() === today.getTime()) {
       notificationType = transaction.is_recurring || transaction.notes?.includes('Recorrente')
         ? 'recurring_day'
@@ -161,8 +161,15 @@ async function checkAndSendNotifications() {
     if (daysUntil === 0) {
       title = `💰 ${transactionType} hoje!`
       body = `${transaction.description || transactionType}: ${amount}`
+    } else if (daysUntil === 3) {
+      title = `📅 ${transactionType} em 3 dias`
+      body = `${transaction.description || transactionType}: ${amount} - ${scheduledDate.toLocaleDateString('pt-BR')}`
+    } else if (daysUntil === 7) {
+      title = `📆 ${transactionType} em 7 dias`
+      body = `${transaction.description || transactionType}: ${amount} - ${scheduledDate.toLocaleDateString('pt-BR')}`
     } else {
-      title = `⏰ ${transactionType} em ${daysUntil} dia${daysUntil > 1 ? 's' : ''}`
+      // Fallback (não deveria acontecer)
+      title = `⏰ ${transactionType} agendada`
       body = `${transaction.description || transactionType}: ${amount} - ${scheduledDate.toLocaleDateString('pt-BR')}`
     }
 

@@ -21,7 +21,7 @@ export async function GET(request: NextRequest) {
     // Buscar preferências de notificações do usuário
     const { data: profile, error: profileError } = await supabase
       .from('users_profile')
-      .select('notifications_enabled, notifications_financial_enabled, notifications_financial_3days, notifications_financial_1day, notifications_financial_day, notifications_financial_overdue')
+      .select('notifications_enabled, notifications_financial_enabled, notifications_financial_7days, notifications_financial_3days, notifications_financial_day, notifications_financial_overdue')
       .eq('id', user.id)
       .single()
 
@@ -44,27 +44,27 @@ export async function GET(request: NextRequest) {
     const todayStr = today.toISOString().split('T')[0]
     
     // Calcular datas futuras que precisam de notificação HOJE
-    // Se hoje é 07/11, precisamos notificar sobre transações agendadas para:
-    // - 10/11 (3 dias depois = notificação 3 dias antes)
-    // - 08/11 (1 dia depois = notificação 1 dia antes)
-    // - 07/11 (hoje = notificação no dia)
+    // Se hoje é 12/11, precisamos notificar sobre transações agendadas para:
+    // - 19/11 (7 dias depois = notificação 7 dias antes)
+    // - 15/11 (3 dias depois = notificação 3 dias antes)
+    // - 12/11 (hoje = notificação no dia)
+    const sevenDaysLater = new Date(today)
+    sevenDaysLater.setDate(today.getDate() + 7)
     const threeDaysLater = new Date(today)
     threeDaysLater.setDate(today.getDate() + 3)
-    const oneDayLater = new Date(today)
-    oneDayLater.setDate(today.getDate() + 1)
     
     const targetDates = [
       todayStr, // No dia
-      oneDayLater.toISOString().split('T')[0], // 1 dia depois (notificação 1 dia antes)
-      threeDaysLater.toISOString().split('T')[0] // 3 dias depois (notificação 3 dias antes)
+      threeDaysLater.toISOString().split('T')[0], // 3 dias depois (notificação 3 dias antes)
+      sevenDaysLater.toISOString().split('T')[0] // 7 dias depois (notificação 7 dias antes)
     ]
 
     console.log('🔔 [API] Verificando notificações para:', {
       userId: user.id,
       today: todayStr,
       targetDates,
-      oneDayLater: oneDayLater.toISOString().split('T')[0],
-      threeDaysLater: threeDaysLater.toISOString().split('T')[0]
+      threeDaysLater: threeDaysLater.toISOString().split('T')[0],
+      sevenDaysLater: sevenDaysLater.toISOString().split('T')[0]
     })
 
     // Buscar transações não pagas com scheduled_date nas datas que precisam de notificação hoje
@@ -163,18 +163,19 @@ export async function GET(request: NextRequest) {
         }
         isOverdue = true
         notificationType = transaction.is_recurring ? 'recurring_overdue' : 'scheduled_overdue'
+      } else if (daysUntil === 7) {
+        // 7 dias antes
+        if (!profile.notifications_financial_7days) {
+          console.log('🔔 [API] Pulando transação - notificações de 7 dias desabilitadas')
+          continue
+        }
+        notificationType = transaction.is_recurring ? 'recurring_7days' : 'scheduled_7days'
       } else if (daysUntil === 3) {
         if (!profile.notifications_financial_3days) {
           console.log('🔔 [API] Pulando transação - notificações de 3 dias desabilitadas')
           continue
         }
         notificationType = transaction.is_recurring ? 'recurring_3days' : 'scheduled_3days'
-      } else if (daysUntil === 1) {
-        if (!profile.notifications_financial_1day) {
-          console.log('🔔 [API] Pulando transação - notificações de 1 dia desabilitadas')
-          continue
-        }
-        notificationType = transaction.is_recurring ? 'recurring_1day' : 'scheduled_1day'
       } else if (daysUntil === 0) {
         if (!profile.notifications_financial_day) {
           console.log('🔔 [API] Pulando transação - notificações do dia desabilitadas')

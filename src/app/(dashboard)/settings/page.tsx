@@ -220,9 +220,23 @@ function NotificationSettings() {
           <div className="ml-4 space-y-2 pl-4 border-l-2">
             <div className="flex items-center justify-between p-3 rounded-lg border bg-muted/50">
               <div className="flex-1">
+                <p className="text-sm font-medium">7 dias antes</p>
+                <p className="text-xs text-muted-foreground">
+                  Notificar 7 dias antes da quitação
+                </p>
+              </div>
+              <Switch
+                checked={preferences.notifications_financial_7days}
+                onCheckedChange={(checked) => updatePreference('notifications_financial_7days', checked)}
+                disabled={isLoading}
+              />
+            </div>
+
+            <div className="flex items-center justify-between p-3 rounded-lg border bg-muted/50">
+              <div className="flex-1">
                 <p className="text-sm font-medium">3 dias antes</p>
                 <p className="text-xs text-muted-foreground">
-                  Notificar 3 dias antes da transação
+                  Notificar 3 dias antes da quitação
                 </p>
               </div>
               <Switch
@@ -234,23 +248,9 @@ function NotificationSettings() {
 
             <div className="flex items-center justify-between p-3 rounded-lg border bg-muted/50">
               <div className="flex-1">
-                <p className="text-sm font-medium">1 dia antes</p>
-                <p className="text-xs text-muted-foreground">
-                  Notificar 1 dia antes da transação
-                </p>
-              </div>
-              <Switch
-                checked={preferences.notifications_financial_1day}
-                onCheckedChange={(checked) => updatePreference('notifications_financial_1day', checked)}
-                disabled={isLoading}
-              />
-            </div>
-
-            <div className="flex items-center justify-between p-3 rounded-lg border bg-muted/50">
-              <div className="flex-1">
                 <p className="text-sm font-medium">No dia</p>
                 <p className="text-xs text-muted-foreground">
-                  Notificar no dia da transação
+                  Notificar no dia da quitação
                 </p>
               </div>
               <Switch

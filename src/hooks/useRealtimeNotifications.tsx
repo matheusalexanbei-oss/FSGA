@@ -74,8 +74,8 @@ export function useRealtimeNotifications() {
 
         // Determinar título e mensagem baseado em days_until
         // days_until = 0 significa que é HOJE
-        // days_until = 1 significa que é AMANHÃ
         // days_until = 3 significa que é em 3 DIAS
+        // days_until = 7 significa que é em 7 DIAS
         const transactionType = notification.type === 'income' ? 'Receita' : 'Despesa'
         const amount = formatCurrency(notification.amount)
         const scheduledDate = formatDate(notification.scheduled_date)
@@ -93,16 +93,16 @@ export function useRealtimeNotifications() {
           // É hoje
           title = `💰 ${transactionType} hoje!`
           description = `${notification.description}: ${amount}`
-        } else if (notification.days_until === 1) {
-          // É amanhã
-          title = `⏰ ${transactionType} amanhã`
-          description = `${notification.description}: ${amount} - ${scheduledDate}`
         } else if (notification.days_until === 3) {
           // É em 3 dias
           title = `📅 ${transactionType} em 3 dias`
           description = `${notification.description}: ${amount} - ${scheduledDate}`
+        } else if (notification.days_until === 7) {
+          // É em 7 dias
+          title = `📆 ${transactionType} em 7 dias`
+          description = `${notification.description}: ${amount} - ${scheduledDate}`
         } else {
-          // Outras datas - não exibir
+          // Outras datas - não exibir (só notificamos em 7 dias, 3 dias e no dia)
           console.log('🔔 [Notifications] Pulando notificação - days_until:', notification.days_until)
           continue
         }

@@ -7,11 +7,8 @@ export interface UpcomingNotification {
   type: 'income' | 'expense'
   amount: number
   scheduled_date: string
-  notification_dates: {
-    date: string
-    days_before: number
-    label: string
-  }[]
+  payment_method?: string
+  is_recurring?: boolean
 }
 
 export async function GET(request: NextRequest) {
@@ -29,28 +26,20 @@ export async function GET(request: NextRequest) {
 
     const today = new Date()
     today.setHours(0, 0, 0, 0)
-    
-    // Buscar transações com scheduled_date nos próximos 7 dias
-    const sevenDaysFromNow = new Date(today)
-    sevenDaysFromNow.setDate(today.getDate() + 7)
-    
     const todayStr = today.toISOString().split('T')[0]
-    const sevenDaysStr = sevenDaysFromNow.toISOString().split('T')[0]
     
-    console.log('🔔 [API Upcoming] Buscando notificações:', {
+    console.log('🔔 [API Upcoming] Buscando transações pendentes:', {
       userId: user.id,
-      today: todayStr,
-      sevenDaysFromNow: sevenDaysStr
+      today: todayStr
     })
     
-    // Buscar TODAS as transações com scheduled_date nos próximos 7 dias
+    // Buscar TODAS as transações pendentes (com scheduled_date >= hoje e não pagas)
     const { data: allTransactions, error: queryError } = await supabase
       .from('financial_transactions')
       .select('*')
       .eq('user_id', user.id)
       .not('scheduled_date', 'is', null)
       .gte('scheduled_date', todayStr)
-      .lte('scheduled_date', sevenDaysStr)
       .order('scheduled_date', { ascending: true })
 
     if (queryError) {
@@ -111,74 +100,16 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ notifications: [] })
     }
 
-    // Processar transações e calcular datas de notificação
-    const upcomingNotifications: UpcomingNotification[] = []
-
-    for (const transaction of transactions) {
-      if (!transaction.scheduled_date) continue
-
-      const scheduledDate = new Date(transaction.scheduled_date)
-      scheduledDate.setHours(0, 0, 0, 0)
-      
-      // Calcular datas de notificação (3 dias antes, 1 dia antes, no dia)
-      const notificationDates: { date: string; days_before: number; label: string }[] = []
-      
-      // 3 dias antes
-      const threeDaysBefore = new Date(scheduledDate)
-      threeDaysBefore.setDate(scheduledDate.getDate() - 3)
-      if (threeDaysBefore >= today) {
-        notificationDates.push({
-          date: threeDaysBefore.toISOString().split('T')[0],
-          days_before: 3,
-          label: '3 dias antes'
-        })
-      }
-      
-      // 1 dia antes
-      const oneDayBefore = new Date(scheduledDate)
-      oneDayBefore.setDate(scheduledDate.getDate() - 1)
-      if (oneDayBefore >= today) {
-        notificationDates.push({
-          date: oneDayBefore.toISOString().split('T')[0],
-          days_before: 1,
-          label: '1 dia antes'
-        })
-      }
-      
-      // No dia
-      if (scheduledDate >= today) {
-        notificationDates.push({
-          date: scheduledDate.toISOString().split('T')[0],
-          days_before: 0,
-          label: 'No dia'
-        })
-      }
-
-      // Filtrar apenas notificações futuras
-      const futureNotifications = notificationDates.filter(notif => {
-        const notifDate = new Date(notif.date)
-        notifDate.setHours(0, 0, 0, 0)
-        return notifDate >= today
-      })
-
-      if (futureNotifications.length > 0) {
-        upcomingNotifications.push({
-          transaction_id: transaction.id,
-          description: transaction.description || (transaction.type === 'income' ? 'Receita' : 'Despesa'),
-          type: transaction.type,
-          amount: Number(transaction.amount),
-          scheduled_date: transaction.scheduled_date,
-          notification_dates: futureNotifications
-        })
-      }
-    }
-
-    // Ordenar por data da próxima notificação
-    upcomingNotifications.sort((a, b) => {
-      const nextNotifA = a.notification_dates[0]?.date || ''
-      const nextNotifB = b.notification_dates[0]?.date || ''
-      return nextNotifA.localeCompare(nextNotifB)
-    })
+    // Processar transações - mostrar apenas as transações pendentes
+    const upcomingNotifications: UpcomingNotification[] = transactions.map(transaction => ({
+      transaction_id: transaction.id,
+      description: transaction.description || (transaction.type === 'income' ? 'Receita' : 'Despesa'),
+      type: transaction.type,
+      amount: Number(transaction.amount),
+      scheduled_date: transaction.scheduled_date,
+      payment_method: transaction.payment_method || undefined,
+      is_recurring: transaction.is_recurring || false
+    }))
 
     console.log('🔔 [API Upcoming] Total de notificações para exibir:', upcomingNotifications.length)
 

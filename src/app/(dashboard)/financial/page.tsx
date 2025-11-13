@@ -23,6 +23,7 @@ import { toast } from 'sonner'
 import { getLocalDateString, parseLocalDate } from '@/lib/utils'
 import { FinancialTransaction } from '@/types/financial'
 import { ErrorBoundary } from '@/components/shared/ErrorBoundary'
+import type { Product } from '@/types/product'
 
 type Transaction = FinancialTransaction
 
@@ -33,7 +34,7 @@ export default function FinancialPage() {
   const [isPendingModalOpen, setIsPendingModalOpen] = useState(false)
   const [transactions, setTransactions] = useState<Transaction[]>([])
   const [recentTransactions, setRecentTransactions] = useState<Transaction[]>([])
-  const [userProducts, setUserProducts] = useState<any[]>([])
+  const [userProducts, setUserProducts] = useState<Product[]>([])
   const [loading, setLoading] = useState(true)
   const [stats, setStats] = useState({
     totalRevenue: 0,
@@ -69,7 +70,7 @@ export default function FinancialPage() {
         if (transactionsError) throw transactionsError
         
         // Ordenar por data de transação
-        const sorted = (transactionsData || []).sort((a, b) => {
+        const sorted = (transactionsData || []).sort((a: FinancialTransaction, b: FinancialTransaction) => {
           const dateA = parseLocalDate(a.date).getTime()
           const dateB = parseLocalDate(b.date).getTime()
           if (dateA === dateB) {
@@ -85,7 +86,7 @@ export default function FinancialPage() {
 
         // Filtrar transações recentes
         const now = new Date()
-        const recentTransactions = sorted.filter(transaction => {
+        const recentTransactions = sorted.filter((transaction: FinancialTransaction) => {
           const transactionDate = parseLocalDate(transaction.date)
           const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate())
           transactionDate.setHours(0, 0, 0, 0)
@@ -116,7 +117,7 @@ export default function FinancialPage() {
 
         if (!isCancelled && pendingTransactionsToday && pendingTransactionsToday.length > 0) {
           const today = getLocalDateString()
-          const todayPending = pendingTransactionsToday.filter(t => {
+          const todayPending = pendingTransactionsToday.filter((t: FinancialTransaction) => {
             if (!t.scheduled_date) return false
             const scheduledDate = parseLocalDate(t.scheduled_date)
             const todayDate = parseLocalDate(today)
@@ -126,7 +127,7 @@ export default function FinancialPage() {
           })
 
           if (todayPending.length > 0) {
-            todayPending.forEach(transaction => {
+            todayPending.forEach((transaction: FinancialTransaction) => {
               const typeLabel = transaction.type === 'income' ? 'Receber' : 'Pagar'
               const amount = parseFloat(transaction.amount.toString())
               toast.info(
@@ -157,13 +158,13 @@ export default function FinancialPage() {
           .eq('user_id', user.id)
 
         const stockValue = productsData
-          ? productsData.reduce((sum, p) => sum + (parseFloat(p.price.toString()) * p.stock_quantity), 0)
+          ? productsData.reduce((sum: number, p: Product) => sum + (parseFloat(p.price.toString()) * p.stock_quantity), 0)
           : 0
         
         if (!isCancelled && allTransactions) {
           const todayStart = new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate())
           const parseDate = (s: string) => parseLocalDate(s)
-          const eligible = allTransactions.filter(t => {
+          const eligible = allTransactions.filter((t: { type: string; amount: number; is_paid?: boolean | null; scheduled_date?: string | null; date: string }) => {
             const isPaid = t.is_paid === undefined || t.is_paid === true
             let isNotScheduled = true
             if (t.scheduled_date) {
@@ -179,11 +180,11 @@ export default function FinancialPage() {
           
           const totalRevenue = eligible
             .filter(t => t.type === 'income')
-            .reduce((sum, t) => sum + parseFloat(t.amount.toString()), 0)
+            .reduce((sum: number, t: { amount: number }) => sum + parseFloat(t.amount.toString()), 0)
           
           const totalExpenses = eligible
             .filter(t => t.type === 'expense')
-            .reduce((sum, t) => sum + parseFloat(t.amount.toString()), 0)
+            .reduce((sum: number, t: { amount: number }) => sum + parseFloat(t.amount.toString()), 0)
           
           setStats({
             totalRevenue,
@@ -449,20 +450,20 @@ export default function FinancialPage() {
                 
         {/* Comparação Mensal e Projeções */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <MonthlyComparison transactions={transactions as any} />
-          <Projections transactions={transactions as any} />
+          <MonthlyComparison transactions={transactions} />
+          <Projections transactions={transactions} />
         </div>
 
         {/* Fluxo de Caixa e Receitas vs Despesas */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <CashFlowChart transactions={transactions as any} period="30d" loading={loading} />
-          <RevenueExpenseChart transactions={transactions as any} loading={loading} />
+          <CashFlowChart transactions={transactions} period="30d" loading={loading} />
+          <RevenueExpenseChart transactions={transactions} loading={loading} />
                 </div>
                 
         {/* Gráficos */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <ProfitEvolutionChart transactions={transactions as any} loading={loading} />
-          <ExpenseBreakdownChart transactions={transactions as any} loading={loading} />
+          <ProfitEvolutionChart transactions={transactions} loading={loading} />
+          <ExpenseBreakdownChart transactions={transactions} loading={loading} />
         </div>
 
       </div>

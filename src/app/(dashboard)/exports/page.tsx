@@ -79,7 +79,7 @@ export default function ExportsPage() {
         .filter(t => t.type === 'expense' && (t.is_paid !== false))
         .reduce((sum, t) => sum + t.amount, 0)
 
-      const stockValue = (productsData || []).reduce((sum, p) => sum + (p.price * (p.stock_quantity || 0)), 0)
+      const stockValue = (productsData || []).reduce((sum: number, p: Product) => sum + (p.price * (p.stock_quantity || 0)), 0)
 
       // Carregar saldo em caixa
       const { data: profile } = await supabase

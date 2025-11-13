@@ -93,17 +93,18 @@ export default function AgendaPage() {
       }
       
       setTasks((data || []) as Task[])
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const supabaseError = error as { message?: string; details?: string; hint?: string; code?: string }
       console.error('Erro ao carregar tarefas:', {
-        message: error?.message,
-        details: error?.details,
-        hint: error?.hint,
-        code: error?.code,
+        message: supabaseError?.message,
+        details: supabaseError?.details,
+        hint: supabaseError?.hint,
+        code: supabaseError?.code,
         error
       })
       
       // Verificar se é erro de tabela não encontrada
-      if (error?.code === '42P01' || error?.message?.includes('does not exist') || error?.message?.includes('relation') || error?.message?.includes('table')) {
+      if (supabaseError?.code === '42P01' || supabaseError?.message?.includes('does not exist') || supabaseError?.message?.includes('relation') || supabaseError?.message?.includes('table')) {
         toast.error('Tabela de tarefas não encontrada. Por favor, execute a migration no Supabase.', {
           duration: 10000,
           action: {
@@ -115,7 +116,7 @@ export default function AgendaPage() {
         })
         console.error('💡 Execute a migration: supabase/migrations/20250119000001_add_tasks_table.sql')
       } else {
-        toast.error(`Erro ao carregar tarefas: ${error?.message || 'Erro desconhecido'}`)
+        toast.error(`Erro ao carregar tarefas: ${supabaseError?.message || 'Erro desconhecido'}`)
       }
     } finally {
       setLoading(false)
@@ -190,17 +191,18 @@ export default function AgendaPage() {
       setEditingTask(null)
       setTaskForm({ title: '', description: '', due_date: '', due_time: '' })
       loadTasks()
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const supabaseError = error as { message?: string; details?: string; hint?: string; code?: string }
       console.error('Erro ao salvar tarefa:', {
-        message: error?.message,
-        details: error?.details,
-        hint: error?.hint,
-        code: error?.code,
+        message: supabaseError?.message,
+        details: supabaseError?.details,
+        hint: supabaseError?.hint,
+        code: supabaseError?.code,
         error
       })
       
       // Verificar se é erro de tabela não encontrada
-      if (error?.code === '42P01' || error?.message?.includes('does not exist') || error?.message?.includes('relation') || error?.message?.includes('table')) {
+      if (supabaseError?.code === '42P01' || supabaseError?.message?.includes('does not exist') || supabaseError?.message?.includes('relation') || supabaseError?.message?.includes('table')) {
         toast.error('Tabela de tarefas não encontrada. Por favor, execute a migration no Supabase.', {
           duration: 10000,
           action: {
@@ -211,7 +213,7 @@ export default function AgendaPage() {
           }
         })
       } else {
-        toast.error(`Erro ao salvar tarefa: ${error?.message || 'Erro desconhecido'}`)
+        toast.error(`Erro ao salvar tarefa: ${supabaseError?.message || 'Erro desconhecido'}`)
       }
     }
   }
@@ -239,14 +241,15 @@ export default function AgendaPage() {
       }
       
       loadTasks()
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const supabaseError = error as { message?: string; details?: string; code?: string }
       console.error('Erro ao atualizar tarefa:', {
-        message: error?.message,
-        details: error?.details,
-        code: error?.code,
+        message: supabaseError?.message,
+        details: supabaseError?.details,
+        code: supabaseError?.code,
         error
       })
-      toast.error(`Erro ao atualizar tarefa: ${error?.message || 'Erro desconhecido'}`)
+      toast.error(`Erro ao atualizar tarefa: ${supabaseError?.message || 'Erro desconhecido'}`)
     }
   }
 
@@ -264,14 +267,15 @@ export default function AgendaPage() {
       if (error) throw error
       toast.success('Tarefa excluída com sucesso!')
       loadTasks()
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const supabaseError = error as { message?: string; details?: string; code?: string }
       console.error('Erro ao excluir tarefa:', {
-        message: error?.message,
-        details: error?.details,
-        code: error?.code,
+        message: supabaseError?.message,
+        details: supabaseError?.details,
+        code: supabaseError?.code,
         error
       })
-      toast.error(`Erro ao excluir tarefa: ${error?.message || 'Erro desconhecido'}`)
+      toast.error(`Erro ao excluir tarefa: ${supabaseError?.message || 'Erro desconhecido'}`)
     }
   }
 
@@ -294,14 +298,15 @@ export default function AgendaPage() {
       setSelectedTasks([])
       setIsBulkMode(false)
       loadTasks()
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const supabaseError = error as { message?: string; details?: string; code?: string }
       console.error('Erro ao marcar tarefas:', {
-        message: error?.message,
-        details: error?.details,
-        code: error?.code,
+        message: supabaseError?.message,
+        details: supabaseError?.details,
+        code: supabaseError?.code,
         error
       })
-      toast.error(`Erro ao marcar tarefas: ${error?.message || 'Erro desconhecido'}`)
+      toast.error(`Erro ao marcar tarefas: ${supabaseError?.message || 'Erro desconhecido'}`)
     }
   }
 
@@ -321,14 +326,15 @@ export default function AgendaPage() {
       setSelectedTasks([])
       setIsBulkMode(false)
       loadTasks()
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const supabaseError = error as { message?: string; details?: string; code?: string }
       console.error('Erro ao excluir tarefas:', {
-        message: error?.message,
-        details: error?.details,
-        code: error?.code,
+        message: supabaseError?.message,
+        details: supabaseError?.details,
+        code: supabaseError?.code,
         error
       })
-      toast.error(`Erro ao excluir tarefas: ${error?.message || 'Erro desconhecido'}`)
+      toast.error(`Erro ao excluir tarefas: ${supabaseError?.message || 'Erro desconhecido'}`)
     }
   }
 

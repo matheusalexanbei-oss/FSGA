@@ -116,19 +116,11 @@ export function NotificationButton() {
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString)
-    const today = new Date()
-    today.setHours(0, 0, 0, 0)
-    const targetDate = new Date(date)
-    targetDate.setHours(0, 0, 0, 0)
-    
-    const diffTime = targetDate.getTime() - today.getTime()
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
-    
-    if (diffDays === 0) return 'Hoje'
-    if (diffDays === 1) return 'Amanhã'
-    if (diffDays === 2) return 'Depois de amanhã'
-    
-    return date.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' })
+    return date.toLocaleDateString('pt-BR', { 
+      day: '2-digit', 
+      month: '2-digit',
+      year: 'numeric'
+    })
   }
 
   const formatCurrency = (amount: number) => {
@@ -203,12 +195,9 @@ export function NotificationButton() {
             <div className="p-3 text-sm text-gray-600 dark:text-gray-300">
               <p className="mb-2">
                 {isSubscribed 
-                  ? 'Você receberá notificações sobre transações recorrentes e agendadas.'
-                  : 'Ative as notificações para receber alertas sobre suas transações financeiras.'
+                  ? 'Você receberá notificações sobre transações agendadas 7 dias antes, 3 dias antes e no dia da quitação.'
+                  : 'Ative as notificações para receber alertas sobre suas transações financeiras agendadas.'
                 }
-              </p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">
-                Notificações serão enviadas 3 dias antes, 1 dia antes e no dia da transação.
               </p>
             </div>
             
@@ -217,7 +206,7 @@ export function NotificationButton() {
               <div className="px-3 py-2">
                 <div className="flex items-center justify-between mb-2">
                   <span className="text-xs font-semibold text-gray-700 dark:text-gray-300">
-                    Próximas Notificações
+                    Agendamentos Pendentes
                   </span>
                   {upcomingNotifications.length > 0 && (
                     <Badge variant="secondary" className="text-xs">
@@ -232,7 +221,7 @@ export function NotificationButton() {
                   </div>
                 ) : upcomingNotifications.length === 0 ? (
                   <div className="text-xs text-gray-500 dark:text-gray-400 py-4 text-center">
-                    Nenhuma notificação agendada
+                    Nenhum agendamento pendente
                   </div>
                 ) : (
                     <ScrollArea className="h-64 pr-2">
@@ -242,7 +231,7 @@ export function NotificationButton() {
                             key={notification.transaction_id}
                             className="p-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-800/50 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
                           >
-                            <div className="flex items-start justify-between gap-2 mb-1">
+                            <div className="flex items-start justify-between gap-2">
                               <div className="flex items-start gap-2 flex-1 min-w-0">
                                 {notification.type === 'income' ? (
                                   <TrendingUp className="h-3.5 w-3.5 text-green-600 dark:text-green-400 mt-0.5 flex-shrink-0" />
@@ -256,21 +245,14 @@ export function NotificationButton() {
                                   <p className="text-xs font-semibold text-gray-700 dark:text-gray-300">
                                     {notification.type === 'income' ? '+' : '-'} {formatCurrency(notification.amount)}
                                   </p>
+                                  <div className="flex items-center gap-1.5 mt-1">
+                                    <Calendar className="h-3 w-3 text-gray-500 dark:text-gray-400" />
+                                    <span className="text-xs text-gray-600 dark:text-gray-400">
+                                      Quitação: {formatDate(notification.scheduled_date)}
+                                    </span>
+                                  </div>
                                 </div>
                               </div>
-                            </div>
-                            <div className="mt-2 space-y-1">
-                              {notification.notification_dates.map((notifDate, idx) => (
-                                <div
-                                  key={idx}
-                                  className="flex items-center gap-1.5 text-xs text-gray-600 dark:text-gray-400"
-                                >
-                                  <Calendar className="h-3 w-3" />
-                                  <span>
-                                    {formatDate(notifDate.date)} - {notifDate.label}
-                                  </span>
-                                </div>
-                              ))}
                             </div>
                           </div>
                         ))}

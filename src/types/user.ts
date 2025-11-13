@@ -17,8 +17,8 @@ export interface UserProfile {
   usage_reset_date: string
   notifications_enabled: boolean
   notifications_financial_enabled: boolean
+  notifications_financial_7days: boolean
   notifications_financial_3days: boolean
-  notifications_financial_1day: boolean
   notifications_financial_day: boolean
   notifications_financial_overdue: boolean
   created_at: string

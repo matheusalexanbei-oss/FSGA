@@ -25,7 +25,7 @@ ALTER FUNCTION public.increment_ai_usage(user_uuid uuid)
 ALTER FUNCTION public.get_user_ai_limits(user_uuid uuid)
     SET search_path = public;
 
--- Atualizar constraint para incluir notificações de itens vencidos
+-- Atualizar constraint para incluir notificações de 7 dias, 3 dias, no dia e vencidas
 ALTER TABLE public.notification_logs
     DROP CONSTRAINT IF EXISTS notification_logs_notification_type_check;
 
@@ -33,12 +33,12 @@ ALTER TABLE public.notification_logs
     ADD CONSTRAINT notification_logs_notification_type_check
         CHECK (
             notification_type IN (
+                'recurring_7days',
                 'recurring_3days',
-                'recurring_1day',
                 'recurring_day',
                 'recurring_overdue',
+                'scheduled_7days',
                 'scheduled_3days',
-                'scheduled_1day',
                 'scheduled_day',
                 'scheduled_overdue'
             )

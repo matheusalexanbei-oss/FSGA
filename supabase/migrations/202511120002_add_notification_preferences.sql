@@ -13,10 +13,10 @@ ALTER TABLE public.users_profile
 ADD COLUMN IF NOT EXISTS notifications_financial_enabled BOOLEAN DEFAULT TRUE;
 
 ALTER TABLE public.users_profile 
-ADD COLUMN IF NOT EXISTS notifications_financial_3days BOOLEAN DEFAULT TRUE;
+ADD COLUMN IF NOT EXISTS notifications_financial_7days BOOLEAN DEFAULT TRUE;
 
 ALTER TABLE public.users_profile 
-ADD COLUMN IF NOT EXISTS notifications_financial_1day BOOLEAN DEFAULT TRUE;
+ADD COLUMN IF NOT EXISTS notifications_financial_3days BOOLEAN DEFAULT TRUE;
 
 ALTER TABLE public.users_profile 
 ADD COLUMN IF NOT EXISTS notifications_financial_day BOOLEAN DEFAULT TRUE;
@@ -27,8 +27,8 @@ ADD COLUMN IF NOT EXISTS notifications_financial_overdue BOOLEAN DEFAULT TRUE;
 -- Add comments
 COMMENT ON COLUMN public.users_profile.notifications_enabled IS 'Enable/disable all notifications';
 COMMENT ON COLUMN public.users_profile.notifications_financial_enabled IS 'Enable/disable financial transaction notifications';
+COMMENT ON COLUMN public.users_profile.notifications_financial_7days IS 'Send notification 7 days before scheduled transaction';
 COMMENT ON COLUMN public.users_profile.notifications_financial_3days IS 'Send notification 3 days before scheduled transaction';
-COMMENT ON COLUMN public.users_profile.notifications_financial_1day IS 'Send notification 1 day before scheduled transaction';
 COMMENT ON COLUMN public.users_profile.notifications_financial_day IS 'Send notification on the day of scheduled transaction';
 COMMENT ON COLUMN public.users_profile.notifications_financial_overdue IS 'Send notification for overdue transactions';
 

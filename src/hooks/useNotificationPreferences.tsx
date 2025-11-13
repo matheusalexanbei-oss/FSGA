@@ -8,8 +8,8 @@ import { toast } from 'sonner'
 export interface NotificationPreferences {
   notifications_enabled: boolean
   notifications_financial_enabled: boolean
+  notifications_financial_7days: boolean
   notifications_financial_3days: boolean
-  notifications_financial_1day: boolean
   notifications_financial_day: boolean
   notifications_financial_overdue: boolean
 }
@@ -34,7 +34,7 @@ export function useNotificationPreferences() {
       // Buscar perfil do usuário do Supabase
       const { data: profile, error } = await supabase
         .from('users_profile')
-        .select('notifications_enabled, notifications_financial_enabled, notifications_financial_3days, notifications_financial_1day, notifications_financial_day, notifications_financial_overdue')
+        .select('notifications_enabled, notifications_financial_enabled, notifications_financial_7days, notifications_financial_3days, notifications_financial_day, notifications_financial_overdue')
         .eq('id', user.id)
         .single()
 
@@ -44,8 +44,8 @@ export function useNotificationPreferences() {
         const defaultPrefs: NotificationPreferences = {
           notifications_enabled: true,
           notifications_financial_enabled: true,
+          notifications_financial_7days: true,
           notifications_financial_3days: true,
-          notifications_financial_1day: true,
           notifications_financial_day: true,
           notifications_financial_overdue: true,
         }
@@ -58,8 +58,8 @@ export function useNotificationPreferences() {
       const prefs: NotificationPreferences = {
         notifications_enabled: profile.notifications_enabled ?? true,
         notifications_financial_enabled: profile.notifications_financial_enabled ?? true,
+        notifications_financial_7days: profile.notifications_financial_7days ?? true,
         notifications_financial_3days: profile.notifications_financial_3days ?? true,
-        notifications_financial_1day: profile.notifications_financial_1day ?? true,
         notifications_financial_day: profile.notifications_financial_day ?? true,
         notifications_financial_overdue: profile.notifications_financial_overdue ?? true,
       }
@@ -119,8 +119,8 @@ export function useNotificationPreferences() {
     // Se desabilitar notificações financeiras, desabilitar todas as sub-opções
     if (key === 'notifications_financial_enabled' && !value) {
       Object.assign(newPreferences, {
+        notifications_financial_7days: false,
         notifications_financial_3days: false,
-        notifications_financial_1day: false,
         notifications_financial_day: false,
         notifications_financial_overdue: false,
       })
@@ -130,8 +130,8 @@ export function useNotificationPreferences() {
     if (key === 'notifications_enabled' && !value) {
       Object.assign(newPreferences, {
         notifications_financial_enabled: false,
+        notifications_financial_7days: false,
         notifications_financial_3days: false,
-        notifications_financial_1day: false,
         notifications_financial_day: false,
         notifications_financial_overdue: false,
       })
