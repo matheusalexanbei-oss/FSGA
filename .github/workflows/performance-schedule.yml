@@ -1,0 +1,64 @@
+name: Testes de Performance Agendados
+
+on:
+  schedule:
+    # Executa toda segunda-feira às 00:00 UTC
+    - cron: '0 0 * * 1'
+  workflow_dispatch:
+
+jobs:
+  performance-tests:
+    name: Testes de Performance Semanais
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout código
+        uses: actions/checkout@v4
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Instalar dependências
+        run: npm ci
+
+      - name: Executar testes de performance
+        run: npm run test:performance
+
+      - name: Upload relatórios de performance
+        uses: actions/upload-artifact@v4
+        with:
+          name: performance-report-${{ github.run_number }}
+          path: |
+            docs/test-results/performance/*.json
+            docs/test-results/performance/*.md
+          retention-days: 90
+
+      - name: Comentar no PR (se aplicável)
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const path = require('path');
+            
+            // Tentar encontrar o relatório mais recente
+            const reportsDir = 'docs/test-results/performance';
+            const files = fs.readdirSync(reportsDir);
+            const mdFiles = files.filter(f => f.endsWith('.md'));
+            
+            if (mdFiles.length > 0) {
+              const latestReport = mdFiles.sort().reverse()[0];
+              const reportPath = path.join(reportsDir, latestReport);
+              const reportContent = fs.readFileSync(reportPath, 'utf8');
+              
+              github.rest.issues.createComment({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: `## 📊 Relatório de Performance\n\n${reportContent}`
+              });
+            }
+

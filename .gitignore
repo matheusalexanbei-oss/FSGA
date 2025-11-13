@@ -25,12 +25,42 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
-# local env files
+# local env files - PROTEÇÃO COMPLETA
+.env
+.env.*
+!.env.example
+!.env*.example
 .env*.local
 .env.local
 .env.development.local
 .env.test.local
 .env.production.local
+.env.backup
+.env.old
+.env.save
+
+# Arquivos de configuração com dados sensíveis
+env-setup.txt
+env-setup-completo.txt
+*.key
+*.pem
+*.p12
+*.pfx
+*.jks
+secrets.json
+credentials.json
+config.json
+*.secret
+*.password
+
+# Arquivos de banco de dados locais
+*.db
+*.sqlite
+*.sqlite3
+
+# Arquivos de sessão e cache
+*.session
+.cache/
 
 # vercel
 .vercel

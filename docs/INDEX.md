@@ -121,6 +121,20 @@ Guia detalhado sobre testes de performance:
 
 ---
 
+### 8. 🚀 [CI_CD_SETUP.md](./CI_CD_SETUP.md)
+**Configuração de CI/CD**
+
+Documentação completa sobre CI/CD:
+- Workflows configurados (CI, CD, Performance)
+- Como configurar secrets no GitHub
+- Como funciona o pipeline automatizado
+- Troubleshooting comum
+- Boas práticas
+
+👉 **Essencial** para entender e configurar automação.
+
+---
+
 ## 🎯 Fluxo de Leitura Recomendado
 
 ### Para Novos Desenvolvedores:

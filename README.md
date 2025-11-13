@@ -6,6 +6,7 @@ Sistema ERP completo com catalogação de produtos assistida por IA
 ![Next.js](https://img.shields.io/badge/Next.js-14+-black)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5+-blue)
 ![Supabase](https://img.shields.io/badge/Supabase-PostgreSQL-green)
+![CI/CD](https://img.shields.io/badge/CI%2FCD-GitHub%20Actions-blue)
 
 ---
 
@@ -269,6 +270,9 @@ fullstackgestorai/
 ### Testes
 - [🧪 Guia Completo de Testes](docs/GUIA_TESTES.md)
 - [⚡ Testes de Performance](docs/TESTES_PERFORMANCE.md)
+
+### CI/CD
+- [🚀 Configuração de CI/CD](docs/CI_CD_SETUP.md)
 
 ### Fases Concluídas
 - [✅ Fase 1 - Configuração](FASE1_CONCLUIDA.md)
