@@ -30,8 +30,20 @@ export default function NewProductPage() {
   const [activeTab, setActiveTab] = useState(searchParams?.get('tab') || 'manual')
   const [activeAITab, setActiveAITab] = useState<'image' | 'text'>('image')
   const [showDuplicateDialog, setShowDuplicateDialog] = useState(false)
-  const [duplicateProduct, setDuplicateProduct] = useState<any>(null)
-  const [pendingProductData, setPendingProductData] = useState<any>(null)
+  interface NewProductData {
+    name: string
+    description: string | null
+    code: string | null
+    price: number
+    cost: number | null
+    stock_quantity: number
+    category_id: string | null
+    user_id: string
+    image_url: string | null
+    ai_processed: boolean
+  }
+  const [duplicateProduct, setDuplicateProduct] = useState<import('@/types/product').Product | null>(null)
+  const [pendingProductData, setPendingProductData] = useState<NewProductData | null>(null)
   const [pendingProductsQueue, setPendingProductsQueue] = useState<ProductListItem[]>([])
   const [currentProductIndex, setCurrentProductIndex] = useState(0)
   
@@ -167,7 +179,7 @@ export default function NewProductPage() {
   }
 
   // Função auxiliar para salvar produto
-  const saveProduct = async (productData: any) => {
+  const saveProduct = async (productData: NewProductData) => {
     if (useSupabase) {
       const result = await saveProductToSupabase(productData)
       if (result.success && result.data) {
@@ -240,8 +252,8 @@ export default function NewProductPage() {
         } else {
           const storedProducts = localStorage.getItem(`products_${user.id}`)
           if (storedProducts) {
-            const products = JSON.parse(storedProducts)
-            const updatedProducts = products.map((p: any) =>
+          const products = JSON.parse(storedProducts)
+            const updatedProducts = products.map((p: import('@/types/product').Product) =>
               p.id === duplicateProduct.id
                 ? { ...p, stock_quantity: newStock, updated_at: new Date().toISOString() }
                 : p

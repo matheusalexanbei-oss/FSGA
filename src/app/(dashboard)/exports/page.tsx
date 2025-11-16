@@ -1,12 +1,12 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { PageWrapper } from '@/components/layout/PageWrapper'
 import { AnimatedCard } from '@/components/shared/AnimatedCard'
 import { CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Download, FileText, ShoppingBag, FileSpreadsheet } from 'lucide-react'
-import { motion } from 'framer-motion'
+// Removido motion: não utilizado nesta página
 import dynamic from 'next/dynamic'
 
 // Importar os modais dinamicamente sem SSR para garantir que as bibliotecas sejam carregadas no cliente
@@ -49,7 +49,7 @@ export default function ExportsPage() {
   })
   const [loadingFinancial, setLoadingFinancial] = useState(false)
 
-  const loadFinancialData = async () => {
+  const loadFinancialData = useCallback(async () => {
     if (!user?.id) return
     
     setLoadingFinancial(true)
@@ -105,10 +105,10 @@ export default function ExportsPage() {
     } finally {
       setLoadingFinancial(false)
     }
-  }
+  }, [user?.id])
 
   // Carregar produtos e categorias
-  const loadProductsData = async () => {
+  const loadProductsData = useCallback(async () => {
     if (!user?.id) return
     
     setLoadingProducts(true)
@@ -134,25 +134,25 @@ export default function ExportsPage() {
     } finally {
       setLoadingProducts(false)
     }
-  }
+  }, [user?.id, useSupabase])
 
   useEffect(() => {
     if (user?.id) {
       loadProductsData()
     }
-  }, [user?.id, useSupabase])
+  }, [user?.id, useSupabase, loadProductsData])
 
   useEffect(() => {
     if (isFinancialExportOpen && user?.id) {
       loadFinancialData()
     }
-  }, [isFinancialExportOpen, user?.id])
+  }, [isFinancialExportOpen, user?.id, loadFinancialData])
 
   useEffect(() => {
     if ((isProductExportOpen || isProductCatalogPDFOpen) && user?.id && products.length === 0) {
       loadProductsData()
     }
-  }, [isProductExportOpen, isProductCatalogPDFOpen, user?.id])
+  }, [isProductExportOpen, isProductCatalogPDFOpen, user?.id, loadProductsData])
 
   return (
     <PageWrapper>

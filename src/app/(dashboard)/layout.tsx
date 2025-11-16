@@ -15,7 +15,7 @@ import { useRealtimeNotifications } from '@/hooks/useRealtimeNotifications'
 export default function DashboardLayout({ children }: { children: ReactNode }) {
   const router = useRouter()
   const [shouldRedirect, setShouldRedirect] = useState(false)
-  const [products, setProducts] = useState<any[]>([])
+  const [products, setProducts] = useState<import('@/types/product').Product[]>([])
 
   // Usar autenticação híbrida
   const { isAuthenticated, loading, user } = useHybridAuth()
@@ -50,7 +50,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
         .limit(500) // Limite razoável
 
       if (!error && data) {
-        setProducts(data)
+        setProducts(data as import('@/types/product').Product[])
       }
     } catch (error) {
       console.error('Erro ao carregar produtos para o bot:', error)

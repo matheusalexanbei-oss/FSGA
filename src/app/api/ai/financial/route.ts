@@ -577,7 +577,7 @@ export async function POST(request: NextRequest) {
       } else {
         // Se não encontrou padrão específico, usa o comando inteiro (sem valores)
         description = command.replace(/\d+[.,]?\d*/g, '').replace(/reais?|r\$/gi, '').trim()
-        if (description.length > 50) {
+        if (description && description.length > 50) {
           description = description.substring(0, 50) + '...'
         }
       }

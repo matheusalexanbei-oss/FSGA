@@ -6,10 +6,12 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button'
 import { Package, ChevronDown, ChevronUp } from 'lucide-react'
 import { parseLocalDate } from '@/lib/utils'
+import type { Product } from '@/types/product'
+import type { FinancialTransaction } from '@/types/financial'
 
 interface TopProductsChartProps {
-  userProducts: any[]
-  transactions: any[]
+  userProducts: Product[]
+  transactions: FinancialTransaction[]
 }
 
 export function TopProductsChart({ userProducts, transactions }: TopProductsChartProps) {

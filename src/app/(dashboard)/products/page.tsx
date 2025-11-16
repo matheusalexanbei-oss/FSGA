@@ -89,11 +89,12 @@ export default function ProductsPage() {
 
   // Escutar eventos de atualização do bot
   useEffect(() => {
-    const handleProductUpdate = (event?: any) => {
+    const handleProductUpdate = (event?: unknown) => {
       if (user?.id) {
         // Se o evento contém dados do produto atualizado, atualizar diretamente
-        if (event?.detail?.product) {
-          const updatedProduct = event.detail.product
+        const custom = event as CustomEvent<{ product?: Product }>
+        if (custom?.detail?.product) {
+          const updatedProduct = custom.detail.product
           setProducts(prevProducts => {
             const existingIndex = prevProducts.findIndex(p => p.id === updatedProduct.id)
             if (existingIndex >= 0) {
@@ -399,7 +400,7 @@ export default function ProductsPage() {
             name: categoryName.trim(),
             description: null,
             user_id: user.id,
-          } as any)
+          })
           .select()
           .single()
 

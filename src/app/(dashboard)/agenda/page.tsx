@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { PageWrapper } from '@/components/layout/PageWrapper'
 import { AnimatedCard } from '@/components/shared/AnimatedCard'
 import { CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -50,7 +50,7 @@ export default function AgendaPage() {
   })
 
   // Carregar tarefas
-  const loadTasks = async () => {
+  const loadTasks = useCallback(async () => {
     if (!user?.id) {
       setLoading(false)
       return
@@ -121,11 +121,11 @@ export default function AgendaPage() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [user?.id])
 
   useEffect(() => {
     loadTasks()
-  }, [user?.id])
+  }, [user?.id, loadTasks])
 
   // Desativar modo bulk quando não houver tarefas selecionadas
   useEffect(() => {
@@ -144,7 +144,7 @@ export default function AgendaPage() {
     return () => {
       window.removeEventListener('task-created', handleTaskCreated)
     }
-  }, [user?.id])
+  }, [user?.id, loadTasks])
 
   // Criar/editar tarefa
   const handleSaveTask = async () => {

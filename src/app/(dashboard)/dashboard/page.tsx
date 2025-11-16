@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useHybridAuth } from '@/hooks/useHybridAuth'
 import { motion } from 'framer-motion'
 import { AnimatedCard } from '@/components/shared/AnimatedCard'
@@ -27,7 +27,7 @@ export default function DashboardPage() {
   const [isLoading, setIsLoading] = useState(true)
 
   // Função para carregar dados
-  const loadDashboardData = async () => {
+  const loadDashboardData = useCallback(async () => {
     if (!user?.id) {
       setIsLoading(false)
       return
@@ -50,12 +50,12 @@ export default function DashboardPage() {
     } finally {
       setIsLoading(false)
     }
-  }
+  }, [user?.id])
 
   // Carregar dados dos produtos
   useEffect(() => {
     loadDashboardData()
-  }, [user?.id])
+  }, [loadDashboardData])
 
   // Escutar eventos de atualização do bot
   useEffect(() => {
@@ -72,7 +72,7 @@ export default function DashboardPage() {
       window.removeEventListener('product-updated', handleProductUpdate)
       window.removeEventListener('transaction-updated', handleProductUpdate)
     }
-  }, [user?.id])
+  }, [user?.id, loadDashboardData])
 
   // Calcular estatísticas
   const totalProducts = products.length

@@ -27,19 +27,48 @@ export async function GET(request: NextRequest) {
     const today = new Date()
     today.setHours(0, 0, 0, 0)
     const todayStr = today.toISOString().split('T')[0]
-    
-    console.log('🔔 [API Upcoming] Buscando transações pendentes:', {
+    const threeDaysLater = new Date(today)
+    threeDaysLater.setDate(today.getDate() + 3)
+    const sevenDaysLater = new Date(today)
+    sevenDaysLater.setDate(today.getDate() + 7)
+
+    // Buscar preferências do usuário para filtrar os agendamentos que realmente gerarão notificação
+    const { data: profile } = await supabase
+      .from('users_profile')
+      .select('notifications_enabled, notifications_financial_enabled, notifications_financial_7days, notifications_financial_3days, notifications_financial_day')
+      .eq('id', user.id)
+      .single()
+
+    // Se notificações estiverem desabilitadas, não mostrar nada
+    if (!profile?.notifications_enabled || !profile?.notifications_financial_enabled) {
+      return NextResponse.json({ notifications: [] })
+    }
+
+    // Montar as datas alvo conforme preferências (somente as que de fato vão disparar notificação)
+    const targetDates: string[] = []
+    if (profile.notifications_financial_day) {
+      targetDates.push(todayStr)
+    }
+    if (profile.notifications_financial_3days) {
+      targetDates.push(threeDaysLater.toISOString().split('T')[0])
+    }
+    if (profile.notifications_financial_7days) {
+      targetDates.push(sevenDaysLater.toISOString().split('T')[0])
+    }
+
+    console.log('🔔 [API Upcoming] Buscando agendamentos que vão notificar:', {
       userId: user.id,
-      today: todayStr
+      today: todayStr,
+      targetDates
     })
     
-    // Buscar TODAS as transações pendentes (com scheduled_date >= hoje e não pagas)
+    // Buscar somente transações pendentes que cairão nas datas de notificação (hoje, +3, +7)
     const { data: allTransactions, error: queryError } = await supabase
       .from('financial_transactions')
       .select('*')
       .eq('user_id', user.id)
-      .not('scheduled_date', 'is', null)
-      .gte('scheduled_date', todayStr)
+      .in('scheduled_date', targetDates)
+      .or('is_paid.eq.false,is_paid.is.null')
       .order('scheduled_date', { ascending: true })
 
     if (queryError) {
@@ -100,7 +129,7 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ notifications: [] })
     }
 
-    // Processar transações - mostrar apenas as transações pendentes
+    // Processar transações - mostrar apenas as transações pendentes que vão notificar
     const upcomingNotifications: UpcomingNotification[] = transactions.map(transaction => ({
       transaction_id: transaction.id,
       description: transaction.description || (transaction.type === 'income' ? 'Receita' : 'Despesa'),
